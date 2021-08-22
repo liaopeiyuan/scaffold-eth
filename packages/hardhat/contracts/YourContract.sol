@@ -9,22 +9,11 @@ contract YourContract is Verifier {
 
   event SetPurpose(address sender, string purpose);
 
-  string public purpose = "Building Unstoppable Apps";
-
   mapping(bytes32 => uint256) public bounties;
-
-  uint256 public verifiedHash;
 
   uint256 public queryResult;
 
   constructor() public payable {
-    // what should we do on deploy?
-  }
-
-  function setPurpose(string memory newPurpose) public {
-    purpose = newPurpose;
-    console.log(msg.sender,"set purpose to",purpose);
-    emit SetPurpose(msg.sender, purpose);
   }
 
   function query(uint[59] memory input) public {
@@ -32,7 +21,7 @@ contract YourContract is Verifier {
   }
 
   function addBounty(uint[59] memory input) public payable {
-    bounties[keccak256(abi.encodePacked(input))] = msg.value;
+    bounties[keccak256(abi.encodePacked(input))] += msg.value;
   }
 
   function collectBounty(
