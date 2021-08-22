@@ -11,7 +11,11 @@ contract YourContract is Verifier {
 
   string public purpose = "Building Unstoppable Apps";
 
+  mapping(bytes32 => uint256) public bounties;
+
   uint256 public verifiedHash;
+
+  uint256 public queryResult;
 
   constructor() public payable {
     // what should we do on deploy?
@@ -23,6 +27,14 @@ contract YourContract is Verifier {
     emit SetPurpose(msg.sender, purpose);
   }
 
+  function query(uint[59] memory input) public {
+    queryResult = bounties[keccak256(abi.encodePacked(input))];
+  }
+
+  function addBounty(uint[59] memory input) public payable {
+    bounties[keccak256(abi.encodePacked(input))] = msg.value;
+  }
+
   function collectBounty(
           address payable to,
           uint[2] memory a,
@@ -31,7 +43,15 @@ contract YourContract is Verifier {
           uint[59] memory input
       ) public {
       require(verifyProof(a, b, c, input), "Invalid Proof");
-      to.transfer(10**18);
+      uint256 topay = bounties[keccak256(abi.encodePacked(input))];
+      bounties[keccak256(abi.encodePacked(input))] = 0;
+      to.transfer(topay);
   }
+
+  // Function to receive Ether. msg.data must be empty
+  receive() external payable {}
+
+  // Fallback function is called when msg.data is not empty
+  fallback() external payable {}
 
 }
