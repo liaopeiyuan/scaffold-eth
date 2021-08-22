@@ -2,7 +2,7 @@ pragma solidity >=0.6.0 <0.9.0;
 //SPDX-License-Identifier: MIT
 
 import "hardhat/console.sol";
-import "./hashVerifier.sol";
+import "./zklrVerifier.sol";
 //import "@openzeppelin/contracts/access/Ownable.sol"; //https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/access/Ownable.sol
 
 contract YourContract is Verifier {
@@ -27,7 +27,7 @@ contract YourContract is Verifier {
           uint[2] memory a,
           uint[2][2] memory b,
           uint[2] memory c,
-          uint[2] memory input
+          uint[59] memory input
       ) public {
       require(verifyProof(a, b, c, input), "Invalid Proof");
       verifiedHash = input[0];
