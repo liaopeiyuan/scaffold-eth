@@ -13,7 +13,7 @@ contract YourContract is Verifier {
 
   uint256 public verifiedHash;
 
-  constructor() public {
+  constructor() public payable {
     // what should we do on deploy?
   }
 
@@ -23,14 +23,15 @@ contract YourContract is Verifier {
     emit SetPurpose(msg.sender, purpose);
   }
 
-  function testVerifyProof(
+  function collectBounty(
+          address payable to,
           uint[2] memory a,
           uint[2][2] memory b,
           uint[2] memory c,
           uint[59] memory input
       ) public {
       require(verifyProof(a, b, c, input), "Invalid Proof");
-      verifiedHash = input[0];
+      to.transfer(10**18);
   }
 
 }
