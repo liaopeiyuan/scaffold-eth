@@ -16,11 +16,11 @@ contract YourContract is Verifier {
   constructor() public payable {
   }
 
-  function query(uint256 dataset_hash, uint256, mse_cap) public {
+  function query(uint256 dataset_hash, uint256 mse_cap) public {
     queryResult = bounties[dataset_hash][mse_cap];
   }
 
-  function addBounty(uint256 dataset_hash, uint256, mse_cap) public payable {
+  function addBounty(uint256 dataset_hash, uint256 mse_cap) public payable {
     bounties[dataset_hash][mse_cap] += msg.value;
   }
 
