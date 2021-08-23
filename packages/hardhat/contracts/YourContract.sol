@@ -33,7 +33,7 @@ contract YourContract is Verifier {
       ) public {
       require(verifyProof(a, b, c, input), "Invalid Proof");
       uint256 topay = bounties[input[1]][input[0]];
-      bounties[dataset_hash] = 0;
+      bounties[input[1]][input[0]]; = 0;
       to.transfer(topay);
   }
 
