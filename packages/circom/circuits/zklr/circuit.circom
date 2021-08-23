@@ -1,10 +1,12 @@
-include "../../node_modules/circomlib/circuits/mimcsponge.circom"
+include "./circomlib/circuits/mimcsponge.circom"
 
-include "../../node_modules/circomlib/circuits/comparators.circom";
-include "../../node_modules/circomlib/circuits/switcher.circom";
-include "../../node_modules/circomlib/circuits/sign.circom"
-include "../../node_modules/circomlib/circuits/bitify.circom"
+include "./circomlib/circuits/comparators.circom";
+include "./circomlib/circuits/switcher.circom";
+include "./circomlib/circuits/sign.circom"
+include "./circomlib/circuits/bitify.circom"
 
+include "./utils/encrypt.circom";
+include "./utils/ecdh.circom";
 // NB: RangeProof is inclusive.
 // input: field element, whose abs is claimed to be less than max_abs_value
 // output: none
@@ -404,4 +406,147 @@ template quant_gemm_mse(m,p,n) {
 
 }
 
-component main = quant_gemm_mse(1,40,1);
+template quant_gemm_mse_enc(m,p,n) {
+    signal input X_q[m][p];
+    signal private input W_q[p][n];
+    signal private input b_q[n];
+    
+    signal input W_q_enc[p][n][2];
+    signal input b_q_enc[n][2];
+    signal private input private_key;
+    signal input public_key[2];
+
+    signal input z_X; 
+    signal input z_W;
+    signal input z_b;
+    signal input z_Y;
+    signal input sbsY_numerator;
+    signal input sbsY_denominator;
+    signal input sXsWsY_numerator;
+    signal input sXsWsY_denominator;
+    
+    signal input Yt_q[m][n];
+    signal input sYsR_numerator;
+    signal input sYsR_denominator;
+    signal input sYtsR_numerator;
+    signal input sYtsR_denominator;
+    signal input constant;
+
+    signal input z_R;
+    signal input z_Sq;
+    signal input sR2sSq_numerator;
+    signal input sR2sSq_denominator;
+
+    signal output out;
+
+    component gemm = quant_matmul_circuit(m,p,n);
+    component error = quant_error(m,n);
+    component mse = quant_mse(m,n);
+
+    component ecdh = Ecdh();
+    signal shared_key;
+
+    ecdh.private_key <== private_key;
+    ecdh.public_key[0] <== public_key[0];
+    ecdh.public_key[1] <== public_key[1];
+
+    shared_key <== ecdh.shared_key;
+
+    /*
+    component enc = Encrypt();
+
+    message ==> enc.plaintext;
+    shared_key ==> enc.shared_key;
+    enc.out[0] ==> 0;
+    enc.out[1] ==> 1;
+    */
+
+    component weight_enc[p][n];
+    component bias_enc[n];
+    
+    for (var i = 0; i < n; i++) {
+        bias_enc[i] = Encrypt();
+        bias_enc[i].shared_key <== shared_key;
+        bias_enc[i].plaintext <== b_q[i];
+        b_q_enc[i][0] === bias_enc[i].out[0];
+        b_q_enc[i][1] === bias_enc[i].out[1];
+    }
+
+
+    
+    for (var i = 0; i < p; i++) {
+        for (var j = 0; j < n; j++) {
+            weight_enc[i][j] = Encrypt();
+            weight_enc[i][j].shared_key <== shared_key;
+            weight_enc[i][j].plaintext <== W_q[i][j];
+            W_q_enc[i][j][0] === weight_enc[i][j].out[0];
+            W_q_enc[i][j][1] === weight_enc[i][j].out[1];
+        }
+    }
+
+
+    for (var i = 0; i < m; i++) {
+        for (var j = 0; j < p; j++) {
+            X_q[i][j] ==> gemm.X_q[i][j];
+        }
+    }
+    
+    for (var i = 0; i < n; i++) {
+        b_q[i] ==> gemm.b_q[i];
+    }
+    
+    for (var i = 0; i < p; i++) {
+        for (var j = 0; j < n; j++) {
+            W_q[i][j] ==> gemm.W_q[i][j];
+        }
+    }
+
+    z_X ==> gemm.z_X; 
+    z_W ==> gemm.z_W;
+    z_b ==> gemm.z_b;
+    z_Y ==> gemm.z_Y;
+    sbsY_numerator ==> gemm.sbsY_numerator;
+    sbsY_denominator ==> gemm.sbsY_denominator;
+    sXsWsY_numerator ==> gemm.sXsWsY_numerator;
+    sXsWsY_denominator ==> gemm.sXsWsY_denominator;
+
+
+    for (var i = 0; i < m; i++) {
+        for (var j = 0; j < n; j++) {
+            //log(gemm.out[i][j]);
+            gemm.out[i][j] ==> error.Y_q[i][j];
+            Yt_q[i][j] ==> error.Yt_q[i][j];
+        }
+    }
+
+    
+    sYsR_numerator ==> error.sYsR_numerator;
+    sYsR_denominator ==> error.sYsR_denominator ;
+    sYtsR_numerator ==> error.sYtsR_numerator;
+    sYtsR_denominator ==> error.sYtsR_denominator;
+    constant ==> error.constant;
+
+    for (var i = 0; i < m; i++) {
+        for (var j = 0; j < n; j++) {
+            //log(error.out[i][j]);
+            error.out[i][j] ==> mse.R_q[i][j];
+        }
+    }
+
+    z_R ==> mse.z_R;
+    z_Sq ==> mse.z_Sq;
+    sR2sSq_numerator ==> mse.sR2sSq_numerator;
+    sR2sSq_denominator ==> mse.sR2sSq_denominator;
+
+    log(mse.out);
+    component lt = LessEqThan(64);
+    lt.in[0] <== mse.out;
+    lt.in[1] <== out;
+    lt.out === 1;
+
+}
+
+component main = quant_gemm_mse_enc(1,40,1);
+//component main = quant_error(5, 1);
+//component main = quant_mse(5, 1);
+//component main = quant_gemm_mse(5,10,1);
