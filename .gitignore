@@ -54,3 +54,4 @@ yarn-error.log*
 **/verification_key.json
 **/verifier.sol
 **/witness.wtns
+packages/circom/powersoftau/powersOfTau28_hez_final_16.ptau

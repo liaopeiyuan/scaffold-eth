@@ -70,7 +70,7 @@ for (circuitName of circuitsList.split(',')) {
       { stdio: 'inherit' }
     );
     execSync(
-      'npx snarkjs zkey new circuit.r1cs ../../powersoftau/pot15_final.ptau circuit_' + circuitName + '.zkey',
+      'npx snarkjs zkey new circuit.r1cs ../../powersoftau/powersOfTau28_hez_final_16.ptau circuit_' + circuitName + '.zkey',
       { stdio: 'inherit' }
     );
     if (deterministic) {
