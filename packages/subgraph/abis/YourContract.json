@@ -30,9 +30,14 @@
   {
     "inputs": [
       {
-        "internalType": "uint256[53]",
-        "name": "input",
-        "type": "uint256[53]"
+        "internalType": "uint256",
+        "name": "dataset_hash",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "mse_cap",
+        "type": "uint256"
       }
     ],
     "name": "addBounty",
@@ -43,9 +48,14 @@
   {
     "inputs": [
       {
-        "internalType": "bytes32",
+        "internalType": "uint256",
         "name": "",
-        "type": "bytes32"
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "name": "bounties",
@@ -82,9 +92,9 @@
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[53]",
+        "internalType": "uint256[54]",
         "name": "input",
-        "type": "uint256[53]"
+        "type": "uint256[54]"
       }
     ],
     "name": "collectBounty",
@@ -95,9 +105,14 @@
   {
     "inputs": [
       {
-        "internalType": "uint256[53]",
-        "name": "input",
-        "type": "uint256[53]"
+        "internalType": "uint256",
+        "name": "dataset_hash",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "mse_cap",
+        "type": "uint256"
       }
     ],
     "name": "query",
@@ -136,9 +151,9 @@
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[53]",
+        "internalType": "uint256[54]",
         "name": "input",
-        "type": "uint256[53]"
+        "type": "uint256[54]"
       }
     ],
     "name": "verifyProof",
