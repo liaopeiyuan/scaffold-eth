@@ -16,11 +16,11 @@ contract YourContract is Verifier {
   constructor() public payable {
   }
 
-  function query(uint[59] memory input) public {
+  function query(uint[53] memory input) public {
     queryResult = bounties[keccak256(abi.encodePacked(input))];
   }
 
-  function addBounty(uint[59] memory input) public payable {
+  function addBounty(uint[53] memory input) public payable {
     bounties[keccak256(abi.encodePacked(input))] += msg.value;
   }
 
@@ -29,7 +29,7 @@ contract YourContract is Verifier {
           uint[2] memory a,
           uint[2][2] memory b,
           uint[2] memory c,
-          uint[59] memory input
+          uint[53] memory input
       ) public {
       require(verifyProof(a, b, c, input), "Invalid Proof");
       uint256 topay = bounties[keccak256(abi.encodePacked(input))];
