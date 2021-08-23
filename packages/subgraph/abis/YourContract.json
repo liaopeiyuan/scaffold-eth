@@ -30,9 +30,9 @@
   {
     "inputs": [
       {
-        "internalType": "uint256[59]",
+        "internalType": "uint256[53]",
         "name": "input",
-        "type": "uint256[59]"
+        "type": "uint256[53]"
       }
     ],
     "name": "addBounty",
@@ -82,9 +82,9 @@
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[59]",
+        "internalType": "uint256[53]",
         "name": "input",
-        "type": "uint256[59]"
+        "type": "uint256[53]"
       }
     ],
     "name": "collectBounty",
@@ -93,24 +93,11 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "purpose",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
-        "internalType": "uint256[59]",
+        "internalType": "uint256[53]",
         "name": "input",
-        "type": "uint256[59]"
+        "type": "uint256[53]"
       }
     ],
     "name": "query",
@@ -121,32 +108,6 @@
   {
     "inputs": [],
     "name": "queryResult",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "newPurpose",
-        "type": "string"
-      }
-    ],
-    "name": "setPurpose",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "verifiedHash",
     "outputs": [
       {
         "internalType": "uint256",
@@ -175,9 +136,9 @@
         "type": "uint256[2]"
       },
       {
-        "internalType": "uint256[59]",
+        "internalType": "uint256[53]",
         "name": "input",
-        "type": "uint256[59]"
+        "type": "uint256[53]"
       }
     ],
     "name": "verifyProof",
