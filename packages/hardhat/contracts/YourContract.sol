@@ -29,7 +29,7 @@ contract YourContract is Verifier {
           uint[2] memory a,
           uint[2][2] memory b,
           uint[2] memory c,
-          uint[53] memory input
+          uint[54] memory input
       ) public {
       require(verifyProof(a, b, c, input), "Invalid Proof");
       uint256 topay = bounties[input[1]][input[0]];
