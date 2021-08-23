@@ -9,19 +9,19 @@ contract YourContract is Verifier {
 
   event SetPurpose(address sender, string purpose);
 
-  mapping(bytes32 => uint256) public bounties;
+  mapping(uint256 => mapping(uint256 => uint256)) public bounties;
 
   uint256 public queryResult;
 
   constructor() public payable {
   }
 
-  function query(uint[53] memory input) public {
-    queryResult = bounties[keccak256(abi.encodePacked(input))];
+  function query(uint256 dataset_hash, uint256, mse_cap) public {
+    queryResult = bounties[dataset_hash][mse_cap];
   }
 
-  function addBounty(uint[53] memory input) public payable {
-    bounties[keccak256(abi.encodePacked(input))] += msg.value;
+  function addBounty(uint256 dataset_hash, uint256, mse_cap) public payable {
+    bounties[dataset_hash][mse_cap] += msg.value;
   }
 
   function collectBounty(
@@ -32,8 +32,8 @@ contract YourContract is Verifier {
           uint[53] memory input
       ) public {
       require(verifyProof(a, b, c, input), "Invalid Proof");
-      uint256 topay = bounties[keccak256(abi.encodePacked(input))];
-      bounties[keccak256(abi.encodePacked(input))] = 0;
+      uint256 topay = bounties[input[1]][input[0]];
+      bounties[dataset_hash] = 0;
       to.transfer(topay);
   }
 

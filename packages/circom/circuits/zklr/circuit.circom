@@ -407,6 +407,7 @@ template quant_gemm_mse(m,p,n) {
 }
 
 template quant_gemm_mse_enc(m,p,n) {
+    signal input hash_input;
     signal input X_q[m][p];
     signal private input W_q[p][n];
     signal private input b_q[n];
@@ -416,6 +417,7 @@ template quant_gemm_mse_enc(m,p,n) {
     signal private input private_key;
     signal input public_key[2];
 
+    /* section total: 8 */
     signal input z_X; 
     signal input z_W;
     signal input z_b;
@@ -426,18 +428,80 @@ template quant_gemm_mse_enc(m,p,n) {
     signal input sXsWsY_denominator;
     
     signal input Yt_q[m][n];
+
+    /* section total: 5 */
     signal input sYsR_numerator;
     signal input sYsR_denominator;
     signal input sYtsR_numerator;
     signal input sYtsR_denominator;
     signal input constant;
 
+    /* section total: 4 */
     signal input z_R;
     signal input z_Sq;
     signal input sR2sSq_numerator;
     signal input sR2sSq_denominator;
 
     signal output out;
+
+    component hash = MultiMiMC7(m*p + m*n + 8+5+4, 91);
+    hash.k <== 0;
+
+    var idx = 0;
+    for (var i = 0; i < m; i++) {
+        for (var j = 0; j < p; j++) {
+            hash.in[idx] <== X_q[i][j];
+            idx = idx + 1;
+            
+        }
+    }
+
+    for (var i = 0; i < m; i++) {
+        for (var j = 0; j < n; j++) {
+            hash.in[idx] <== Yt_q[i][j];
+            idx = idx + 1;
+        }
+    }
+
+    hash.in[idx] <== z_X;
+    idx = idx + 1; 
+    hash.in[idx] <== z_W;
+    idx = idx + 1;
+    hash.in[idx] <== z_b;
+    idx = idx + 1;
+    hash.in[idx] <== z_Y;
+    idx = idx + 1;
+    hash.in[idx] <== sbsY_numerator;
+    idx = idx + 1;
+    hash.in[idx] <== sbsY_denominator;
+    idx = idx + 1;
+    hash.in[idx] <== sXsWsY_numerator;
+    idx = idx + 1;
+    hash.in[idx] <== sXsWsY_denominator;
+    idx = idx + 1;
+
+    hash.in[idx] <== sYsR_numerator;
+    idx = idx + 1;
+    hash.in[idx] <== sYsR_denominator;
+    idx = idx + 1;
+    hash.in[idx] <== sYtsR_numerator;
+    idx = idx + 1;
+    hash.in[idx] <== sYtsR_denominator;
+    idx = idx + 1;
+    hash.in[idx] <== constant;
+    idx = idx + 1;
+
+    hash.in[idx] <== z_R;
+    idx = idx + 1;
+    hash.in[idx] <== z_Sq;
+    idx = idx + 1;
+    hash.in[idx] <== sR2sSq_numerator;
+    idx = idx + 1;
+    hash.in[idx] <== sR2sSq_denominator;
+    idx = idx + 1;
+
+    hash.out === hash_input;
+
 
     component gemm = quant_matmul_circuit(m,p,n);
     component error = quant_error(m,n);
